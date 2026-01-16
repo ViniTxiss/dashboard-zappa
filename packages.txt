@@ -1,4 +1,0 @@
-# Arquivo opcional para Streamlit Cloud
-# Se você precisar de pacotes do sistema Linux, adicione aqui
-# Exemplo:
-# libgomp1
