@@ -119,6 +119,7 @@ def main():
     km_col = None
     spr_col = None
     paradas_col = None
+    orh_col = None
     
     for col in df_filtered.columns:
         col_lower = str(col).lower()
@@ -128,6 +129,8 @@ def main():
             spr_col = col
         elif 'parada' in col_lower:
             paradas_col = col
+        elif col_lower == 'orh':
+            orh_col = col
     
     # ========================================================================
     # SEÇÃO 1: KPIs PRINCIPAIS
@@ -139,22 +142,46 @@ def main():
     kpis_display = {}
     
     if km_col and km_col in df_filtered.columns:
-        total_km = df_filtered[km_col].sum()
-        media_km = df_filtered[km_col].mean()
-        kpis_display['Total KM'] = f"{total_km:,.2f}"
-        kpis_display['Média KM'] = f"{media_km:,.2f}"
+        km_series = pd.to_numeric(df_filtered[km_col], errors='coerce')
+        if km_series.notna().any():
+            total_km = km_series.sum()
+            media_km = km_series.mean()
+            kpis_display['Total KM'] = f"{total_km:,.2f}"
+            kpis_display['Média KM'] = f"{media_km:,.2f}"
     
     if spr_col and spr_col in df_filtered.columns:
-        total_spr = df_filtered[spr_col].sum()
-        media_spr = df_filtered[spr_col].mean()
-        kpis_display['Total Caixas (SPR)'] = f"{total_spr:,.0f}"
-        kpis_display['Média Caixas'] = f"{media_spr:,.2f}"
+        spr_series = pd.to_numeric(df_filtered[spr_col], errors='coerce')
+        if spr_series.notna().any():
+            total_spr = spr_series.sum()
+            media_spr = spr_series.mean()
+            kpis_display['Total Caixas (SPR)'] = f"{total_spr:,.0f}"
+            kpis_display['Média Caixas'] = f"{media_spr:,.2f}"
     
     if paradas_col and paradas_col in df_filtered.columns:
-        total_paradas = df_filtered[paradas_col].sum()
-        media_paradas = df_filtered[paradas_col].mean()
-        kpis_display['Total Paradas'] = f"{total_paradas:,.0f}"
-        kpis_display['Média Paradas'] = f"{media_paradas:,.2f}"
+        paradas_series = pd.to_numeric(df_filtered[paradas_col], errors='coerce')
+        if paradas_series.notna().any():
+            total_paradas = paradas_series.sum()
+            media_paradas = paradas_series.mean()
+            kpis_display['Total Paradas'] = f"{total_paradas:,.0f}"
+            kpis_display['Média Paradas'] = f"{media_paradas:,.2f}"
+    
+    # Adiciona KPIs de ORH (formato horas)
+    if orh_col and orh_col in df_filtered.columns:
+        # Garante que a coluna seja numérica antes de calcular
+        orh_series = pd.to_numeric(df_filtered[orh_col], errors='coerce')
+        if orh_series.notna().any():
+            total_orh = orh_series.sum()
+            media_orh = orh_series.mean()
+            # Formata em horas (HH:MM)
+            def format_hours_kpi(decimal_hours):
+                if pd.isna(decimal_hours):
+                    return "0:00"
+                hours = int(decimal_hours)
+                minutes = int((decimal_hours - hours) * 60)
+                return f"{hours}:{minutes:02d}"
+            
+            kpis_display['Total ORH'] = format_hours_kpi(total_orh)
+            kpis_display['Média ORH'] = format_hours_kpi(media_orh)
     
     # Adiciona contagem de motoristas
     if motorista_col:
@@ -227,16 +254,27 @@ def main():
         
         # Agrupa dados por motorista
         if motorista_col:
+            # Cria cópia do DataFrame para garantir tipos numéricos
+            df_agg = df_filtered.copy()
             agg_dict = {}
+            
             if km_col and km_col in df_filtered.columns:
+                if not pd.api.types.is_numeric_dtype(df_agg[km_col]):
+                    df_agg[km_col] = pd.to_numeric(df_agg[km_col], errors='coerce')
                 agg_dict[km_col] = 'sum'
+            
             if spr_col and spr_col in df_filtered.columns:
+                if not pd.api.types.is_numeric_dtype(df_agg[spr_col]):
+                    df_agg[spr_col] = pd.to_numeric(df_agg[spr_col], errors='coerce')
                 agg_dict[spr_col] = 'sum'
+            
             if paradas_col and paradas_col in df_filtered.columns:
+                if not pd.api.types.is_numeric_dtype(df_agg[paradas_col]):
+                    df_agg[paradas_col] = pd.to_numeric(df_agg[paradas_col], errors='coerce')
                 agg_dict[paradas_col] = 'sum'
             
             if agg_dict:
-                motorista_stats = df_filtered.groupby(motorista_col).agg(agg_dict).reset_index()
+                motorista_stats = df_agg.groupby(motorista_col).agg(agg_dict).reset_index()
                 
                 # Renomeia colunas
                 rename_dict = {motorista_col: 'Motorista'}
@@ -313,10 +351,6 @@ def main():
         use_container_width=True,
         height=400
     )
-    
-    # Informações sobre os dados
-    with st.expander("ℹ️ Informações sobre os dados"):
-        st.json(summary if summary else {})
     
     # ========================================================================
     # FOOTER

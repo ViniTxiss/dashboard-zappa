@@ -5,6 +5,7 @@ Define a estrutura geral e componentes visuais
 
 import streamlit as st
 from typing import Dict, Optional
+from pathlib import Path
 from app.config.settings import COLORS
 
 
@@ -17,6 +18,17 @@ def apply_custom_css():
         /* Estilo geral */
         .main {
             padding: 2rem 1rem;
+            background-color: #666666;
+        }
+        
+        /* Fundo da página */
+        .stApp {
+            background-color: #666666;
+        }
+        
+        /* Fundo do conteúdo principal */
+        .block-container {
+            background-color: #666666;
         }
         
         /* Cards de KPI */
@@ -63,6 +75,21 @@ def apply_custom_css():
             margin-bottom: 0.5rem;
         }
         
+        /* Header com marca da empresa */
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .company-name {
+            color: #1f77b4;
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
         /* Sidebar */
         .css-1d391kg {
             padding-top: 3rem;
@@ -91,7 +118,7 @@ def apply_custom_css():
         
         /* Containers */
         .stContainer {
-            background-color: #f8f9fa;
+            background-color: #666666;
             padding: 1rem;
             border-radius: 10px;
             margin-bottom: 1rem;
@@ -125,11 +152,52 @@ def apply_custom_css():
     """, unsafe_allow_html=True)
 
 
-def render_header(title: str = "Dashboard Analytics"):
+def render_header(title: str = "Dashboard Analytics", company_name: str = None, logo_path: str = None):
     """
-    Renderiza cabeçalho do dashboard
+    Renderiza cabeçalho do dashboard com marca da empresa no canto superior
     """
-    st.title(f" {title}")
+    from app.config.settings import COMPANY_NAME, COMPANY_LOGO_PATH, BASE_DIR
+    
+    # Usa configurações padrão se não fornecidas
+    company = company_name or COMPANY_NAME
+    logo = logo_path or COMPANY_LOGO_PATH
+    
+    # Converte logo para Path se for string
+    if logo and isinstance(logo, str):
+        # Se for caminho relativo, usa BASE_DIR
+        if not Path(logo).is_absolute():
+            logo = BASE_DIR / logo
+        else:
+            logo = Path(logo)
+    elif logo and not isinstance(logo, Path):
+        # Garante que seja Path
+        logo = Path(logo) if logo else None
+    
+    # Header com marca no canto superior direito
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        st.title(f" {title}")
+    
+    with col2:
+        # Verifica se existe logo e exibe
+        logo_path_str = None
+        if logo and isinstance(logo, Path):
+            if logo.exists():
+                logo_path_str = str(logo)
+        
+        if logo_path_str:
+            st.image(logo_path_str, width=250, use_container_width=True)
+        else:
+            # Se não houver logo, exibe nome da empresa estilizado
+            st.markdown(f"""
+            <div style="text-align: right; padding: 1rem 0;">
+                <h3 style="color: {COLORS['primary']}; margin: 0; font-weight: 600;">
+                    {company}
+                </h3>
+            </div>
+            """, unsafe_allow_html=True)
+    
     st.markdown("---")
 
 

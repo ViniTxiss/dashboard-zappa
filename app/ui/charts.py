@@ -12,6 +12,19 @@ from datetime import datetime
 from app.config.settings import COLORS, CHART_HEIGHT, CHART_TEMPLATE
 
 
+def format_hours(decimal_hours: float) -> str:
+    """
+    Converte horas decimais para formato HH:MM
+    Exemplo: 8.5 -> "8:30", 7.25 -> "7:15"
+    """
+    if pd.isna(decimal_hours):
+        return ""
+    
+    hours = int(decimal_hours)
+    minutes = int((decimal_hours - hours) * 60)
+    return f"{hours}:{minutes:02d}"
+
+
 def create_line_chart(df: pd.DataFrame,
                      x_column: str,
                      y_column: str,
@@ -256,8 +269,13 @@ def create_ranking_chart(df: pd.DataFrame,
     """
     Cria gráfico de ranqueamento (ranking) dos top N
     """
+    # Garante que a coluna de valor seja numérica antes de fazer operações
+    df_copy = df.copy()
+    if not pd.api.types.is_numeric_dtype(df_copy[value_column]):
+        df_copy[value_column] = pd.to_numeric(df_copy[value_column], errors='coerce')
+    
     # Agrupa por categoria e soma valores
-    ranking = df.groupby(category_column)[value_column].sum().reset_index()
+    ranking = df_copy.groupby(category_column)[value_column].sum().reset_index()
     ranking.columns = ['categoria', 'total']
     
     # Ordena por total (maior para menor)
@@ -339,12 +357,21 @@ def create_table(df: pd.DataFrame,
     # Limita número de linhas
     df_display = df.head(max_rows).copy()
     
+    # Formata coluna orh para horas (HH:MM)
+    for col in df_display.columns:
+        if 'orh' in str(col).lower():
+            # Garante que a coluna seja numérica antes de formatar
+            df_display[col] = pd.to_numeric(df_display[col], errors='coerce')
+            df_display[col] = df_display[col].apply(format_hours)
+    
     # Formata colunas numéricas
     numeric_cols = df_display.select_dtypes(include=['number']).columns
     for col in numeric_cols:
-        df_display[col] = df_display[col].apply(
-            lambda x: f"{x:,.2f}" if pd.notna(x) else ""
-        )
+        # Pula coluna orh se já foi formatada
+        if 'orh' not in str(col).lower():
+            df_display[col] = df_display[col].apply(
+                lambda x: f"{x:,.2f}" if pd.notna(x) else ""
+            )
     
     # Formata datas
     date_cols = df_display.select_dtypes(include=['datetime64']).columns

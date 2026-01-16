@@ -93,27 +93,6 @@ def render_sidebar(df: pd.DataFrame) -> dict:
         st.session_state.clear()
         st.rerun()
     
-    # Informações sobre os dados
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Informações")
-    st.sidebar.metric("Total de Registros", f"{len(df):,}")
-    
-    if numeric_columns:
-        total_value = df[numeric_columns[0]].sum()
-        col_name = numeric_columns[0].lower()
-        
-        # Formatação específica para KM
-        if 'km' in col_name:
-            formatted_value = f"{total_value:,.2f} km".replace(',', 'X').replace('.', ',').replace('X', '.')
-        else:
-            # Para outras colunas numéricas, mantém formatação genérica
-            formatted_value = f"{total_value:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        
-        st.sidebar.metric(
-            f"Total {numeric_columns[0].title()}",
-            formatted_value
-        )
-    
     return filters
 
 

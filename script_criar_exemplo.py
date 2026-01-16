@@ -25,6 +25,7 @@ dados_exemplo = {
 }
 
 # Cria DataFrame
+"""""
 df = pd.DataFrame(dados_exemplo)
 
 # Salva como Excel
@@ -34,3 +35,4 @@ df.to_excel(arquivo_exemplo, index=False, sheet_name='performance - 2022-12-02T1
 print(f"Arquivo de exemplo criado: {arquivo_exemplo}")
 print(f"Total de linhas: {len(df)}")
 print(f"Colunas: {', '.join(df.columns.tolist())}")
+"""

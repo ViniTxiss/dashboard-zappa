@@ -70,6 +70,14 @@ CHART_HEIGHT = 400
 CHART_TEMPLATE = "plotly_white"
 
 # ============================================================================
+# CONFIGURAÇÕES DE MARCA/LOGO
+# ============================================================================
+
+# Nome da empresa (aparece no header)
+COMPANY_NAME = "Zappa"
+# Caminho para o logo (pode ser Path ou string)
+COMPANY_LOGO_PATH = BASE_DIR / "app" / "ui" / "img" / "logo.png"
+# ============================================================================
 # CONFIGURAÇÕES DE VALIDAÇÃO
 # ============================================================================
 
