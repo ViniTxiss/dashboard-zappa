@@ -187,7 +187,7 @@ def render_header(title: str = "Dashboard Analytics", company_name: str = None, 
                 logo_path_str = str(logo)
         
         if logo_path_str:
-            st.image(logo_path_str, width=250, use_container_width=True)
+            st.image(logo_path_str, width=250)
         else:
             # Se não houver logo, exibe nome da empresa estilizado
             st.markdown(f"""

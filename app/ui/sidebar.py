@@ -89,7 +89,7 @@ def render_sidebar(df: pd.DataFrame) -> dict:
     
     # Botão de reset
     st.sidebar.markdown("---")
-    if st.sidebar.button("🔄 Resetar Filtros", use_container_width=True):
+    if st.sidebar.button("🔄 Resetar Filtros", width='stretch'):
         st.session_state.clear()
         st.rerun()
     

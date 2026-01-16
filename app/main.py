@@ -9,9 +9,12 @@ import plotly.graph_objects as go
 import logging
 from pathlib import Path
 import sys
+from pathlib import Path
 
-# Adiciona diretório raiz ao path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Adiciona diretório raiz ao path para garantir que o pacote 'app' seja encontrado
+root_path = Path(__file__).resolve().parent.parent
+if str(root_path) not in sys.path:
+    sys.path.insert(0, str(root_path))
 
 from app.config.settings import EXCEL_FILE, COLORS, CHART_HEIGHT, CHART_TEMPLATE
 from app.data.loader import DataLoader
@@ -214,7 +217,7 @@ def main():
                 top_n=15,
                 orientation='h'
             )
-            st.plotly_chart(fig_km, use_container_width=True)
+            st.plotly_chart(fig_km, width='stretch')
             st.markdown("")
         
         # Ranqueamento por SPR (Caixas)
@@ -228,7 +231,7 @@ def main():
                 top_n=15,
                 orientation='h'
             )
-            st.plotly_chart(fig_spr, use_container_width=True)
+            st.plotly_chart(fig_spr, width='stretch')
             st.markdown("")
         
         # Ranqueamento por Paradas
@@ -242,7 +245,7 @@ def main():
                 top_n=15,
                 orientation='h'
             )
-            st.plotly_chart(fig_paradas, use_container_width=True)
+            st.plotly_chart(fig_paradas, width='stretch')
             st.markdown("")
         
         st.markdown("---")
@@ -325,32 +328,32 @@ def main():
                             margin=dict(l=20, r=20, t=60, b=100)
                         )
                         
-                        st.plotly_chart(fig_comparativo, use_container_width=True)
-                
-                with col2:
-                    # Tabela de resumo
-                    st.markdown("#### Resumo por Motorista")
-                    st.dataframe(
-                        motorista_stats,
-                        use_container_width=True,
-                        height=400
-                    )
-        
-        st.markdown("---")
-    
-    # ========================================================================
-    # SEÇÃO 4: TABELA DE DADOS
-    # ========================================================================
-    render_section_title("Dados Detalhados", "📋")
-    
-    # Prepara tabela
-    df_table = create_table(df_filtered, max_rows=100)
-    
-    st.dataframe(
-        df_table,
-        use_container_width=True,
-        height=400
-    )
+                        st.plotly_chart(fig_comparativo, width='stretch')
+                 
+                 with col2:
+                     # Tabela de resumo
+                     st.markdown("#### Resumo por Motorista")
+                     st.dataframe(
+                         motorista_stats,
+                         width='stretch',
+                         height=400
+                     )
+         
+         st.markdown("---")
+     
+     # ========================================================================
+     # SEÇÃO 4: TABELA DE DADOS
+     # ========================================================================
+     render_section_title("Dados Detalhados", "📋")
+     
+     # Prepara tabela
+     df_table = create_table(df_filtered, max_rows=100)
+     
+     st.dataframe(
+         df_table,
+         width='stretch',
+         height=400
+     )
     
     # ========================================================================
     # FOOTER
