@@ -329,31 +329,31 @@ def main():
                         )
                         
                         st.plotly_chart(fig_comparativo, width='stretch')
-                 
-                 with col2:
-                     # Tabela de resumo
-                     st.markdown("#### Resumo por Motorista")
-                     st.dataframe(
-                         motorista_stats,
-                         width='stretch',
-                         height=400
-                     )
-         
-         st.markdown("---")
+                
+                with col2:
+                    # Tabela de resumo
+                    st.markdown("#### Resumo por Motorista")
+                    st.dataframe(
+                        motorista_stats,
+                        width='stretch',
+                        height=400
+                    )
+        
+        st.markdown("---")
      
-     # ========================================================================
-     # SEÇÃO 4: TABELA DE DADOS
-     # ========================================================================
-     render_section_title("Dados Detalhados", "📋")
-     
-     # Prepara tabela
-     df_table = create_table(df_filtered, max_rows=100)
-     
-     st.dataframe(
-         df_table,
-         width='stretch',
-         height=400
-     )
+    # ========================================================================
+    # SEÇÃO 4: TABELA DE DADOS
+    # ========================================================================
+    render_section_title("Dados Detalhados", "📋")
+    
+    # Prepara tabela
+    df_table = create_table(df_filtered, max_rows=100)
+    
+    st.dataframe(
+        df_table,
+        width='stretch',
+        height=400
+    )
     
     # ========================================================================
     # FOOTER
