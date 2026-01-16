@@ -47,6 +47,13 @@ Thumbs.db
 *.xlsx
 *.xls
 *.csv
+scrpit_criar_exemplo.py
+pre_deploy_checklist.md
+deploy.md
+guia_deploy_rapido.md
+instrucoes.md
+
+
 !modelo Power BI - exemplo.xlsx  # Mantém apenas arquivo de exemplo
 
 # Cache
